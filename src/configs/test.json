@@ -1,0 +1,80 @@
+{
+    "name": "testing",
+    "n_gpu": 1,
+    "preprocessing": {
+        "sr": 22050
+    },
+    "arch": {
+        "type": "HiFiGANModel",
+        "args": {
+            "input_channels": 80,
+            "hidden_channels": 512,
+            "upsample_kernels": [16, 16, 4, 4],
+            "upsample_stride": [8, 8, 2, 2],
+            "resblock_kernels": [3, 7, 11],
+            "resblock_dilations": [[1, 3, 5], [1, 3, 5], [1, 3, 5]]
+        }
+    },
+    "data": {
+        "train": {
+            "batch_size": 2,
+            "num_workers": 5,
+            "datasets": [
+                {
+                    "type": "LJSpeechDataset",
+                    "args": {
+                        "part": "train",
+                        "limit": 2
+                    }
+                }
+            ]
+        }
+    },
+    "G_optimizer": {
+        "type": "AdamW",
+        "args": {
+            "lr": 2e-4,
+            "weight_decay": 0.01,
+            "betas": [0.8, 0.99]
+        }
+    },
+    "D_optimizer": {
+        "type": "AdamW",
+        "args": {
+            "lr": 2e-4,
+            "weight_decay": 0.01,
+            "betas": [0.8, 0.99]
+        }
+    },
+    "loss": {
+        "type": "HiFiLoss",
+        "args": {}
+    },
+    "lr_G_scheduler": {
+        "type": "ExponentialLR",
+        "args": {
+            "gamma": 0.999
+        }
+    },
+    "lr_D_scheduler": {
+        "type": "ExponentialLR",
+        "args": {
+            "gamma": 0.999
+        }
+    },
+    "trainer": {
+        "epochs": 30,
+        "save_dir": "saved/",
+        "save_period": 5,
+        "verbosity": 2,
+        "monitor": "off",
+        "early_stop": 50,
+        "visualize": "wandb",
+        "wandb_project": "hifigan_project",
+        "run_name": "test",
+        "sample_rate": 22050,
+        "len_epoch": 10,
+        "log_step": 50,
+        "grad_norm_clip": 100000
+    }
+}
