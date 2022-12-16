@@ -5,7 +5,6 @@ from pathlib import Path
 from random import shuffle
 from typing import Optional
 
-import pandas as pd
 import PIL
 import torch
 import torch.nn.functional as F
@@ -27,7 +26,8 @@ class Trainer(BaseTrainer):
     def __init__(
             self,
             model,
-            criterion,
+            G_criterion,
+            D_criterion,
             G_optimizer,
             D_optimizer,
             config,
@@ -38,7 +38,7 @@ class Trainer(BaseTrainer):
             len_epoch=None,
             skip_oom=True,
     ):
-        super().__init__(model, criterion, G_optimizer, D_optimizer, config, device)
+        super().__init__(model, G_criterion, D_criterion, G_optimizer, D_optimizer, config, device)
         self.skip_oom = skip_oom
         self.config = config
         self.train_dataloader = dataloaders["train"]
@@ -55,7 +55,8 @@ class Trainer(BaseTrainer):
         self.log_step = self.config["trainer"].get("log_step", 50)
 
         self.train_metrics = MetricTracker(
-            "G_loss", "D_loss", "mel_loss", "G_grad_norm", "D_grad_norm", writer=self.writer
+            "G_loss", "D_loss", "adv_loss", "fm_loss",
+            "mel_loss", "G_grad_norm", "D_grad_norm", writer=self.writer
         )
 
     @staticmethod
@@ -63,7 +64,7 @@ class Trainer(BaseTrainer):
         """
         Move all necessary tensors to the HPU
         """
-        names = ["spectrogram"]
+        names = ["spectrogram", "real_audio"]
         for tensor_for_gpu in names:
             batch[tensor_for_gpu] = batch[tensor_for_gpu].to(device)
         return batch
@@ -142,7 +143,9 @@ class Trainer(BaseTrainer):
         if self.lr_D_scheduler is not None:
             self.lr_D_scheduler.step()
 
-        self._log_audio(batch['generated_audio'][0], self.config["trainer"].get("sample_rate"), 'train.wav')
+        self._log_audio(batch['generated_audio'][0], self.config["trainer"].get("sample_rate"), 'train_0.wav')
+        self._log_audio(batch['generated_audio'][1], self.config["trainer"].get("sample_rate"), 'train_1.wav')
+
         self._run_test_synthesis()
 
         return log
@@ -159,33 +162,45 @@ class Trainer(BaseTrainer):
     def process_batch(self, batch, is_train: bool, metrics: MetricTracker,
                       index: Optional[int] = None, total: Optional[int] = None):        
         batch = self.move_batch_to_device(batch, self.device)
-        outputs = self.model(**batch)
-        if type(outputs) is dict:
-            batch.update(outputs)
+        g_outputs = self.model(**batch)
+        if type(g_outputs) is dict:
+            batch.update(g_outputs)
         else:
-            batch["generated_audio"] = outputs
+            raise NotImplementedError()
+        batch["detached_generated_audio"] = batch["generated_audio"].detach()
+        d_outputs = self.model.descriminate(**batch)
+        if type(d_outputs) is dict:
+            batch.update(d_outputs)
+        else:
+            raise NotImplementedError()
 
         if is_train:
-            G_loss, D_loss, mel_loss = self.criterion(**batch)
+            self.D_optimizer.zero_grad()
+            D_loss = self.D_criterion(**batch)
+            D_loss.backward()
+            self.train_metrics.update("D_grad_norm", self.get_grad_norm('D'))
+            self.D_optimizer.step()
+
+            self.G_optimizer.zero_grad()
+            d_outputs = self.model.descriminate(**batch)
+            batch.update(d_outputs)
+
+            G_loss, adv_loss, fm_loss, mel_loss = self.G_criterion(**batch)
+            G_loss.backward()
+            self.train_metrics.update("G_grad_norm", self.get_grad_norm('G'))
+            self.G_optimizer.step()
+
             batch["G_loss"] = G_loss
             batch["D_loss"] = D_loss
+            batch["adv_loss"] = adv_loss
+            batch["fm_loss"] = fm_loss 
             batch["mel_loss"] = mel_loss
 
             metrics.update("G_loss", batch["G_loss"].item())
             metrics.update("D_loss", batch["D_loss"].item())
+            metrics.update("adv_loss", batch["adv_loss"].item())
+            metrics.update("fm_loss", batch["fm_loss"].item())
             metrics.update("mel_loss", batch["mel_loss"].item())
-
-            G_loss.backward()
-            #D_loss.backward()
-
-            self.train_metrics.update("G_grad_norm", self.get_grad_norm('G'))
-            #self.train_metrics.update("D_grad_norm", self.get_grad_norm('D'))
-
-            self.G_optimizer.step()
-            self.G_optimizer.zero_grad()
-            #self.D_optimizer.step()
-            #self.D_optimizer.zero_grad()
-
         else:
             metrics.update("loss", 0) # we do not count loss in eval mode
         return batch
