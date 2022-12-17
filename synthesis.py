@@ -38,8 +38,6 @@ def get_data(target_sr):
         
         data_list.append(mel_transform(audio_tensor))
 
-    data_list = [] # TODO
-
     return data_list
 
 
