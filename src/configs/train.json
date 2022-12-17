@@ -17,8 +17,8 @@
     },
     "data": {
         "train": {
-            "batch_size": 2,
-            "num_workers": 2,
+            "batch_size": 1,
+            "num_workers": 0,
             "datasets": [
                 {
                     "type": "LJSpeechDataset",
@@ -69,17 +69,17 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 400,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         "monitor": "off",
-        "early_stop": 50,
+        "early_stop": 500,
         "visualize": "wandb",
         "wandb_project": "hifigan_project",
         "run_name": "train",
         "sample_rate": 22050,
-        "len_epoch": 3000,
+        "len_epoch": 1000,
         "log_step": 50,
         "grad_norm_clip": 100000
     }
