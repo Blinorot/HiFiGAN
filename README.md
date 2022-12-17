@@ -42,7 +42,9 @@ To download data run the following command:
 python3 scripts/download_data.py
 ```
 
-Run `scripts/get_pretrained.py` script to download pre-trained model in the `saved/models/pretrained` directory. (Model was trained with `src/configs/train.json`)
+Run `scripts/get_pretrained.py` script to download pre-trained model in the `saved/models/pretrained` directory. (Model was trained with `src/configs/train.json`).
+
+Run `scripts/get_test.py` to download audio for testing.
 
 ## Project structure
 
@@ -126,7 +128,7 @@ The sythesizer saves audio into `results` directory in the following format:
 t={text_index_in_test_list}.wav
 ```
 
-Default test phrases:
+Default test phrases (use `scripts/get_test.py` to download audio for Mel Spectrograms):
 
 -   A defibrillator is a device that gives a high energy electric shock to the heart of someone who is in cardiac arrest
 
