@@ -1,5 +1,3 @@
-from turtle import forward
-
 import torch
 from src.model.utils import get_conv_padding_size
 from torch import nn

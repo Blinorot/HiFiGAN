@@ -78,7 +78,7 @@
         "early_stop": 5000,
         "visualize": "wandb",
         "wandb_project": "hifigan_project",
-        "run_name": "train",
+        "run_name": "DS_train",
         "sample_rate": 22050,
         "len_epoch": 819,
         "log_step": 50,
