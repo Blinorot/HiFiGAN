@@ -17,8 +17,8 @@
     },
     "data": {
         "train": {
-            "batch_size": 16,
-            "num_workers": 5,
+            "batch_size": 28,
+            "num_workers": 6,
             "datasets": [
                 {
                     "type": "LJSpeechDataset",
@@ -80,7 +80,7 @@
         "wandb_project": "hifigan_project",
         "run_name": "train",
         "sample_rate": 22050,
-        "len_epoch": 1000,
+        "len_epoch": 465,
         "log_step": 50,
         "grad_norm_clip": 100000
     }
