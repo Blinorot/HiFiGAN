@@ -69,7 +69,7 @@
         }
     },
     "trainer": {
-        "epochs": 1000,
+        "epochs": 100,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
@@ -79,7 +79,7 @@
         "wandb_project": "hifigan_project",
         "run_name": "train",
         "sample_rate": 22050,
-        "len_epoch": 1000,
+        "len_epoch": 3000,
         "log_step": 50,
         "grad_norm_clip": 100000
     }
