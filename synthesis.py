@@ -52,6 +52,7 @@ def run_synthesis(model, sr):
 
     for i, mel_spec in enumerate(data_list):
         generated_audio = model(mel_spec.to(DEVICE))['generated_audio'].squeeze(0)
+        generated_audio = generated_audio.detach().cpu()
         torchaudio.save(f'results/t={i}.wav', generated_audio, sr)
 
 
