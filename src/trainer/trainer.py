@@ -143,8 +143,11 @@ class Trainer(BaseTrainer):
         if self.lr_D_scheduler is not None:
             self.lr_D_scheduler.step()
 
-        self._log_audio(batch['generated_audio'][0], self.config["trainer"].get("sample_rate"), 'train_0.wav')
-        self._log_audio(batch['generated_audio'][1], self.config["trainer"].get("sample_rate"), 'train_1.wav')
+        self._log_audio(batch['generated_audio'][0], 
+                        self.config["trainer"].get("sample_rate"), 'train_0.wav')
+        if batch['generated_audio'].shape[0] > 1:
+            self._log_audio(batch['generated_audio'][1], 
+                            self.config["trainer"].get("sample_rate"), 'train_1.wav')
 
         self._run_test_synthesis()
 
@@ -167,8 +170,8 @@ class Trainer(BaseTrainer):
             batch.update(g_outputs)
         else:
             raise NotImplementedError()
-        batch["detached_generated_audio"] = batch["generated_audio"].detach()
-        d_outputs = self.model.descriminate(**batch)
+        d_outputs = self.model.descriminate(generated_audio=batch["generated_audio"].detach(),
+                                            real_audio=batch["real_audio"])
         if type(d_outputs) is dict:
             batch.update(d_outputs)
         else:
@@ -182,7 +185,8 @@ class Trainer(BaseTrainer):
             self.D_optimizer.step()
 
             self.G_optimizer.zero_grad()
-            d_outputs = self.model.descriminate(**batch)
+            d_outputs = self.model.descriminate(generated_audio=batch["generated_audio"],
+                                                real_audio=batch["real_audio"])
             batch.update(d_outputs)
 
             G_loss, adv_loss, fm_loss, mel_loss = self.G_criterion(**batch)

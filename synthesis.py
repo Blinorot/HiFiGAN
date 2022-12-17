@@ -40,8 +40,9 @@ def get_data(target_sr):
 
     return data_list
 
-
+@torch.inference_mode()
 def run_synthesis(model, sr):
+    model.eval()
     data_list = get_data(sr)
 
     save_dir = ROOT_PATH / 'results'

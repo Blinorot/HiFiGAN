@@ -21,5 +21,5 @@ class HiFiGANModel(BaseModel):
     def generate(self, **batch):
         return self.forward(**batch)
 
-    def descriminate(self, detached_generated_audio, real_audio, **batch):
-        return self.descriminator(detached_generated_audio, real_audio)
+    def descriminate(self, generated_audio, real_audio, **batch):
+        return self.descriminator(generated_audio, real_audio)
