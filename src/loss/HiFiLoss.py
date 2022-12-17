@@ -1,5 +1,3 @@
-from nis import cat
-
 import torch
 from src.preprocessing.melspec import MelSpectrogram
 from torch import nn

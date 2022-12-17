@@ -17,14 +17,13 @@
     },
     "data": {
         "train": {
-            "batch_size": 2,
+            "batch_size": 100,
             "num_workers": 5,
             "datasets": [
                 {
                     "type": "LJSpeechDataset",
                     "args": {
-                        "part": "train",
-                        "limit": 2
+                        "part": "train"
                     }
                 }
             ]
