@@ -17,13 +17,14 @@
     },
     "data": {
         "train": {
-            "batch_size": 1,
-            "num_workers": 0,
+            "batch_size": 16,
+            "num_workers": 5,
             "datasets": [
                 {
                     "type": "LJSpeechDataset",
                     "args": {
-                        "part": "train"
+                        "part": "train",
+                        "max_audio_length": 8192
                     }
                 }
             ]
@@ -69,7 +70,7 @@
         }
     },
     "trainer": {
-        "epochs": 400,
+        "epochs": 3000,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
