@@ -204,7 +204,7 @@ class BaseTrainer:
             )
         else:
             self.G_optimizer.load_state_dict(checkpoint["G_optimizer"])
-            self.D_optimizer.load_state_dict(checkpoint["D_optimizer"])
+            self.D_optimizer.load_state_dict(checkpoint["D_optimizer"])            
 
         self.logger.info(
             "Checkpoint loaded. Resume training from epoch {}".format(self.start_epoch)
