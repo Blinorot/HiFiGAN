@@ -52,10 +52,6 @@ class Trainer(BaseTrainer):
         self.evaluation_dataloaders = {k: v for k, v in dataloaders.items() if k != "train"}
         self.lr_G_scheduler = lr_G_scheduler
         self.lr_D_scheduler = lr_D_scheduler
-        if config.resume:
-            for _ in range(self.start_epoch - 1):
-                self.lr_G_scheduler.step()
-                self.lr_D_scheduler.step()
 
         self.log_step = self.config["trainer"].get("log_step", 50)
 
