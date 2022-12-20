@@ -19,6 +19,7 @@ class BaseDataset(Dataset):
             index,
             config_parser: ConfigParser,
             limit=None,
+            max_audio_length=8192,
     ):
         self.config_parser = config_parser
         self._assert_index_is_valid(index)
@@ -30,11 +31,17 @@ class BaseDataset(Dataset):
             index = index[:limit]
 
         self._index: List[dict] = index
+        self.max_audio_length = max_audio_length
 
     def __getitem__(self, ind):
         data_dict = self._index[ind]
         audio_path = data_dict["path"]
         audio_wave = self.load_audio(audio_path)
+
+        if audio_wave.shape[-1] > self.max_audio_length:
+            random_start = np.random.randint(0, audio_wave.shape[-1] - self.max_audio_length + 1)
+            audio_wave = audio_wave[..., random_start:random_start+self.max_audio_length]
+
         return {
             "audio": audio_wave,
             "audio_length": audio_wave.shape[-1],

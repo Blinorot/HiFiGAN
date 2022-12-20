@@ -20,5 +20,6 @@ def collate_fn(dataset_items: List[dict]):
 
     result_batch = {}
     result_batch['spectrogram'] = batch_spectrogram
+    result_batch['real_audio'] = batch_audio.unsqueeze(1)
     
     return result_batch

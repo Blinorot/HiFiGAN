@@ -17,7 +17,7 @@
     },
     "data": {
         "train": {
-            "batch_size": 28,
+            "batch_size": 16,
             "num_workers": 6,
             "datasets": [
                 {
@@ -70,17 +70,17 @@
         }
     },
     "trainer": {
-        "epochs": 3000,
+        "epochs": 5000,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,
         "monitor": "off",
-        "early_stop": 500,
+        "early_stop": 5000,
         "visualize": "wandb",
         "wandb_project": "hifigan_project",
-        "run_name": "train",
+        "run_name": "DS_train",
         "sample_rate": 22050,
-        "len_epoch": 465,
+        "len_epoch": 819,
         "log_step": 50,
         "grad_norm_clip": 100000
     }

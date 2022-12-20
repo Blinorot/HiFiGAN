@@ -38,12 +38,11 @@ def get_data(target_sr):
         
         data_list.append(mel_transform(audio_tensor))
 
-    data_list = [] # TODO
-
     return data_list
 
-
+@torch.inference_mode()
 def run_synthesis(model, sr):
+    model.eval()
     data_list = get_data(sr)
 
     save_dir = ROOT_PATH / 'results'
@@ -53,7 +52,8 @@ def run_synthesis(model, sr):
 
     for i, mel_spec in enumerate(data_list):
         generated_audio = model(mel_spec.to(DEVICE))['generated_audio'].squeeze(0)
-        torchaudio.save(f'results/t={i}.wav', generated_audio, sr)
+        generated_audio = generated_audio.detach().cpu()
+        torchaudio.save(str(save_dir / f't={i}.wav'), generated_audio, sr)
 
 
 if __name__ == '__main__':

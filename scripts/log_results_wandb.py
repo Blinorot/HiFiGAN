@@ -14,14 +14,14 @@ def log(args):
     with wandb.init(project=args.project, name=args.name):
         for fpath in data_dir.iterdir():
             audio, sr = torchaudio.load(fpath)
-            speed, pitch, energy, text, model = fpath.name.split('_')
-            if text[-1] == '0':
+            index = fpath.name.split('=')[1][0]
+            if index == '0':
                 text = 'Defibrillator'
-            elif text[-1] == '1':
+            elif index == '1':
                 text = 'Massachusetts'
-            elif text[-1] == '2':
+            elif index == '2':
                 text = 'Wasserstein'
-            new_name = '_'.join([text, speed, pitch, energy])
+            new_name = text
             audio = audio.detach().cpu().numpy().T
             wandb.log({
                 new_name: wandb.Audio(audio, sample_rate=sr)
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     args.add_argument(
         "-p",
         "--project",
-        default="fastspeech_project",
+        default="hifigan_project",
         type=str,
         help="WandB project name",
     )

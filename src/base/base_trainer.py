@@ -11,13 +11,15 @@ class BaseTrainer:
     Base class for all trainers
     """
 
-    def __init__(self, model: BaseModel, criterion, G_optimizer, D_optimizer, config, device):
+    def __init__(self, model: BaseModel, G_criterion, D_criterion, 
+                 G_optimizer, D_optimizer, config, device):
         self.device = device
         self.config = config
         self.logger = config.get_logger("trainer", config["trainer"]["verbosity"])
 
         self.model = model
-        self.criterion = criterion
+        self.G_criterion = G_criterion
+        self.D_criterion = D_criterion
         self.G_optimizer = G_optimizer
         self.D_optimizer = D_optimizer
 
@@ -93,7 +95,7 @@ class BaseTrainer:
 
             # evaluate model performance according to configured metric,
             # save best checkpoint as model_best
-            best = False
+            best = True
             if self.mnt_mode != "off":
                 try:
                     # check whether model performance improved or not,
@@ -202,7 +204,7 @@ class BaseTrainer:
             )
         else:
             self.G_optimizer.load_state_dict(checkpoint["G_optimizer"])
-            self.D_optimizer.load_state_dict(checkpoint["D_optimizer"])
+            self.D_optimizer.load_state_dict(checkpoint["D_optimizer"])            
 
         self.logger.info(
             "Checkpoint loaded. Resume training from epoch {}".format(self.start_epoch)

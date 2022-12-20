@@ -36,13 +36,9 @@ pip install -r requirements.txt
 
 ### Data downloading and preprocessing
 
-To download data run the following command:
+Run `scripts/get_test.py` to download audio for testing.
 
-```bash
-python3 scripts/download_data.py
-```
-
-Run `scripts/get_pretrained.py` script to download pre-trained model in the `saved/models/pretrained` directory. (Model was trained with `src/configs/train.json`)
+Run `scripts/get_pretrained.py` script to download pre-trained models in the `saved/models/pretrained` directory. (Models were trained with `src/configs/train.json` and `src/configs/DS_train.json`).
 
 ## Project structure
 
@@ -113,11 +109,11 @@ To synthesize test utterances run the following command:
 python3 synthesis.py -c path/to/saved/config -p path/to/model/checkpoint
 ```
 
-For pre-trained model it will be:
+For best pre-trained model it will be:
 
 ```bash
-python3 synthesis.py -c saved/models/pretrained/final/config.json\
-        -p saved/models/pretrained/final/model_best.pth
+python3 synthesis.py -c saved/models/pretrained/DS_train/config.json\
+        -p saved/models/pretrained/DS_train/model_best.pth
 ```
 
 The sythesizer saves audio into `results` directory in the following format:
@@ -126,7 +122,7 @@ The sythesizer saves audio into `results` directory in the following format:
 t={text_index_in_test_list}.wav
 ```
 
-Default test phrases:
+Default test phrases (use `scripts/get_test.py` to download audio for Mel Spectrograms):
 
 -   A defibrillator is a device that gives a high energy electric shock to the heart of someone who is in cardiac arrest
 

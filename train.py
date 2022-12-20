@@ -39,7 +39,8 @@ def main(config):
         model = torch.nn.DataParallel(model, device_ids=device_ids)
 
     # get function handles of loss and metrics
-    loss_module = config.init_obj(config["loss"], module_loss).to(device)
+    G_loss_module = config.init_obj(config["G_loss"], module_loss).to(device)
+    D_loss_module = config.init_obj(config["D_loss"], module_loss).to(device)
 
     # build optimizer, learning rate scheduler. delete every line containing lr_scheduler for
     # disabling scheduler
@@ -52,7 +53,8 @@ def main(config):
 
     trainer = Trainer(
         model,
-        loss_module,
+        G_loss_module,
+        D_loss_module,
         G_optimizer,
         D_optimizer,
         config=config,

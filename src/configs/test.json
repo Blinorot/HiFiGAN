@@ -24,7 +24,8 @@
                     "type": "LJSpeechDataset",
                     "args": {
                         "part": "train",
-                        "limit": 2
+                        "limit": 2,
+                        "max_audio_length": 8192
                     }
                 }
             ]
@@ -46,8 +47,15 @@
             "betas": [0.8, 0.99]
         }
     },
-    "loss": {
-        "type": "HiFiLoss",
+    "G_loss": {
+        "type": "GeneratorLoss",
+        "args": {
+            "fm_coef": 2,
+            "mel_coef": 45
+        }
+    },
+    "D_loss": {
+        "type": "DescriminatorLoss",
         "args": {}
     },
     "lr_G_scheduler": {
